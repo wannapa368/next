@@ -1,41 +1,37 @@
+// StudentDetail.tsx
 "use client";
-import { useParams } from "next/navigation";
-import { useStudentStore } from "@/store/studentStore";
 
-export default function StudentDetail() {
-  const { id } = useParams();
-  const student = useStudentStore((s) => s.students.find((st) => st.id === id));
+import { Student } from "@/store/studentStore";
 
-  if (!student) return <p className="p-6">ไม่พบข้อมูลนักศึกษา</p>;
+interface StudentDetailProps {
+  student: Student;
+}
 
-  const renderGallery = (title: string, images?: string[]) => (
-    images && images.length > 0 && (
-      <div className="mt-4">
-        <h3 className="font-semibold mb-2">{title}</h3>
-        <div className="grid grid-cols-3 gap-2">
-          {images.map((img, idx) => (
-            <img key={idx} src={img} className="w-full h-24 object-cover rounded shadow" />
-          ))}
-        </div>
-      </div>
-    )
-  );
-
+export default function StudentDetail({ student }: StudentDetailProps) {
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white rounded shadow mt-10">
-      <h2 className="text-2xl font-semibold mb-4">{student.firstName} {student.lastName}</h2>
-      <p><strong>ที่อยู่:</strong> {student.address}</p>
-      <p><strong>เบอร์โทร:</strong> {student.phone}</p>
+    <div className="p-6 bg-gray-800 text-white rounded-xl shadow-lg max-w-xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4">{student.firstName} {student.lastName}</h2>
       <p><strong>โรงเรียน:</strong> {student.school}</p>
-      <p><strong>GPA:</strong> {student.gpa}</p>
-      <p><strong>ความสามารถพิเศษ:</strong> {student.skills}</p>
-      <p><strong>เหตุผลในการสมัคร:</strong> {student.reason}</p>
+      <p><strong>GPA:</strong> {student.gpa.toFixed(2)}</p>
       <p><strong>สาขาที่เลือก:</strong> {student.major}</p>
       <p><strong>มหาวิทยาลัย:</strong> {student.university}</p>
-      {student.photo && <img src={student.photo} className="mt-4 w-32 h-32 object-cover rounded shadow" />}
-      {renderGallery("กิจกรรม", student.activities)}
-      {renderGallery("รางวัล", student.awards)}
-      {renderGallery("ผลงาน", student.projects)}
+      {student.skills && <p><strong>ความสามารถพิเศษ:</strong> {student.skills}</p>}
+      {student.reason && <p><strong>เหตุผลในการสมัคร:</strong> {student.reason}</p>}
+
+      {student.photo && (
+        <img src={student.photo} className="mt-4 w-36 h-36 object-cover rounded-lg border-2 border-gray-500" />
+      )}
+
+      {(student.activities?.length || 0) > 0 && (
+        <div className="mt-4">
+          <h3 className="font-semibold mb-2">กิจกรรม / รางวัล / ผลงาน</h3>
+          <div className="flex gap-3 overflow-x-auto">
+            {student.activities?.map((img, i) => (
+              <img key={i} src={img} className="w-28 h-28 object-cover rounded-lg shadow-lg border-2 border-gray-500" />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
