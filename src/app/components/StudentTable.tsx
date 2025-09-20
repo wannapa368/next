@@ -1,9 +1,12 @@
 "use client";
-import Link from "next/link";
 import { useStudentStore } from "@/store/studentStore";
 import { useState } from "react";
 
-export default function StudentTable() {
+type StudentTableProps = {
+  onSelect?: (id: string) => void; // 👈 เพิ่ม optional callback
+};
+
+export default function StudentTable({ onSelect }: StudentTableProps) {
   const students = useStudentStore((s) => s.students);
   const [sortAsc, setSortAsc] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,6 +26,7 @@ export default function StudentTable() {
     <div className="p-8 bg-gradient-to-r from-gray-800 to-gray-900 min-h-screen text-white">
       <h2 className="text-3xl font-bold mb-6 text-center">รายชื่อนักศึกษา</h2>
 
+      {/* 🔍 Search + Sort */}
       <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
         <input
           type="text"
@@ -39,6 +43,7 @@ export default function StudentTable() {
         </button>
       </div>
 
+      {/* 📋 Table */}
       <div className="overflow-x-auto rounded-xl shadow-lg">
         <table className="min-w-full bg-gray-800 rounded-lg overflow-hidden">
           <thead className="bg-gradient-to-r from-green-400 to-blue-400 text-white">
@@ -61,12 +66,22 @@ export default function StudentTable() {
                 <td className="p-4">{s.lastName}</td>
                 <td className="p-4 font-semibold">{s.gpa.toFixed(2)}</td>
                 <td className="p-4">
-                  <Link
-                    href={`/teacher/${s.id}`}
-                    className="text-blue-400 hover:text-blue-200 font-semibold underline"
-                  >
-                    ดูรายละเอียด
-                  </Link>
+                  {onSelect ? (
+                    <button
+                      onClick={() => onSelect(s.id)}
+                      className="text-blue-400 hover:text-blue-200 font-semibold underline"
+                    >
+                      ดูรายละเอียด
+                    </button>
+                  ) : (
+                    // fallback: ถ้าไม่ส่ง onSelect → ยังใช้ Link ได้
+                    <a
+                      href={`/teacher/${s.id}`}
+                      className="text-blue-400 hover:text-blue-200 font-semibold underline"
+                    >
+                      ดูรายละเอียด
+                    </a>
+                  )}
                 </td>
               </tr>
             ))}

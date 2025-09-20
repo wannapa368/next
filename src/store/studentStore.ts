@@ -1,6 +1,7 @@
 // /store/studentStore.ts
 import { create } from "zustand";
 
+
 export interface Student {
   id: string;
   firstName: string;
